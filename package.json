@@ -22,6 +22,7 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
+    "@next/third-parties": "^16.0.4",
     "@payloadcms/admin-bar": "3.63.0",
     "@payloadcms/db-mongodb": "3.63.0",
     "@payloadcms/live-preview-react": "3.63.0",
@@ -31,6 +32,7 @@
     "@payloadcms/plugin-redirects": "3.63.0",
     "@payloadcms/plugin-search": "3.63.0",
     "@payloadcms/plugin-seo": "3.63.0",
+    "@payloadcms/plugin-stripe": "^3.64.0",
     "@payloadcms/richtext-lexical": "3.63.0",
     "@payloadcms/ui": "3.63.0",
     "@radix-ui/react-checkbox": "^1.0.4",

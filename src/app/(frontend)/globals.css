@@ -101,3 +101,15 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+h1 {
+  font-size: 4rem;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.6em;
+}

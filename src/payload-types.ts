@@ -72,6 +72,10 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    products: Product;
+    productsTest: ProductsTest;
+    navbar: Navbar;
+    cart: Cart;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +98,10 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    productsTest: ProductsTestSelect<false> | ProductsTestSelect<true>;
+    navbar: NavbarSelect<false> | NavbarSelect<true>;
+    cart: CartSelect<false> | CartSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -780,6 +788,90 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  images: {
+    image?: (string | null) | Media;
+    id?: string | null;
+  }[];
+  color?: string | null;
+  productType: 'dried' | 'fresh' | 'balloons' | 'misc' | 'wedding';
+  recommended?: (string | Product)[] | null;
+  size?: string | null;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productsTest".
+ */
+export interface ProductsTest {
+  id: string;
+  name: string;
+  slug: string;
+  products: (string | Product)[];
+  image?: (string | null) | Media;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navbar".
+ */
+export interface Navbar {
+  id: string;
+  name?: string | null;
+  navItems?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cart".
+ */
+export interface Cart {
+  id: string;
+  name: string;
+  user: string | User;
+  slug: string;
+  items?:
+    | {
+        product: string | Product;
+        quantity: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -987,6 +1079,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'productsTest';
+        value: string | ProductsTest;
+      } | null)
+    | ({
+        relationTo: 'navbar';
+        value: string | Navbar;
+      } | null)
+    | ({
+        relationTo: 'cart';
+        value: string | Cart;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1355,6 +1463,82 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  price?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  color?: T;
+  productType?: T;
+  recommended?: T;
+  size?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productsTest_select".
+ */
+export interface ProductsTestSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  products?: T;
+  image?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navbar_select".
+ */
+export interface NavbarSelect<T extends boolean = true> {
+  name?: T;
+  navItems?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cart_select".
+ */
+export interface CartSelect<T extends boolean = true> {
+  name?: T;
+  user?: T;
+  slug?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        quantity?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -1683,6 +1867,7 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
+  NavBars?: (string | Navbar)[] | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1728,6 +1913,7 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  NavBars?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -17,7 +17,7 @@ export const Footer: GlobalConfig = {
           appearances: false,
         }),
       ],
-      maxRows: 6,
+      maxRows: 10,
       admin: {
         initCollapsed: true,
         components: {
@@ -25,6 +25,12 @@ export const Footer: GlobalConfig = {
         },
       },
     },
+    {
+      name: 'NavBars',
+      type: 'relationship',
+      relationTo: 'navbar',
+      hasMany: true,
+    }
   ],
   hooks: {
     afterChange: [revalidateFooter],

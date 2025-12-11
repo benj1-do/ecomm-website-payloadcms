@@ -4,6 +4,8 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
+import { stripePlugin } from '@payloadcms/plugin-stripe'
+
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
@@ -16,6 +18,10 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { Products } from './collections/Products'
+import { ProductsTest } from './collections/ProductTest'
+import { NavBar } from './collections/NavBar'
+import { Cart } from './collections/Cart'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -62,11 +68,14 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Posts, Media, Categories, Users, Products, ProductsTest, NavBar, Cart],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
     ...plugins,
+    stripePlugin({
+      stripeSecretKey: process.env.STRIPE_SECRET_KEY
+    })
     // storage-adapter-placeholder
   ],
   secret: process.env.PAYLOAD_SECRET,
