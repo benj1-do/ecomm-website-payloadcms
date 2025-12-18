@@ -2,6 +2,7 @@
 import { getPayload } from "payload";
 import config from '@payload-config';
 import { headers as getHeaders } from "next/headers";
+import createCart from "../../cart/createCart";
 
 export async function sendOrder(productsObj: Record<string, number>) {
 
@@ -20,55 +21,64 @@ export async function sendOrder(productsObj: Record<string, number>) {
     const payload = await getPayload({ config });
     const headers = await getHeaders();
     const { user, permissions } = await payload.auth({ headers }); // gets the user
-    const cartRes = await payload.find({
-        collection: 'cart',
-        depth: 2,
-        where: {
-            user: { equals: user }
-        }
-    });
-    const userCart = cartRes.docs[0];
-    const currentCart = userCart.items ?? [];
-
-    const addCart = await Promise.all(
-        Object.entries(productsObj).map(async ([slug, quantity]) => {
-            return {
-                'product': await findProductBySlug(slug),
-                'quantity': quantity
+    if (user) {
+        let userCart;
+        const cartRes = await payload.find({
+            collection: 'cart',
+            depth: 2,
+            where: {
+                user: { equals: user }
             }
+        });
+        if (cartRes.docs.length === 0) {
+            userCart = await createCart(user); // if a cart object isn't found, create one
+        } else {
+            userCart = cartRes.docs[0];
+        }
+
+        const currentCart = userCart.items ?? [];
+
+        const addCart = await Promise.all(
+            Object.entries(productsObj).map(async ([slug, quantity]) => {
+                return {
+                    'product': await findProductBySlug(slug),
+                    'quantity': quantity
+                }
+            })
+        );
+
+        const map = new Map();
+
+        for (const { product, quantity } of currentCart) {
+            map.set(product.slug,
+                map.has(product.slug) ? {
+                    product,
+                    quantity: map.get(product.slug).quantity + quantity
+                } : { product, quantity } // default if not found
+            );
+        }
+
+        for (const { product, quantity } of addCart) {
+            map.set(product.slug,
+                map.has(product.slug) ? {
+                    product,
+                    quantity: map.get(product.slug).quantity + quantity
+                } : { product, quantity } // default if not found
+            );
+        }
+
+        const newCart = Array.from(map.values());
+        console.log(newCart);
+        const updRes = await payload.update({
+            collection: 'cart',
+            id: userCart.id,
+            data: {
+                items: newCart
+            },
+            depth: 2
         })
-    );
-
-    const map = new Map();
-
-    for (const { product, quantity } of currentCart) {
-        map.set(product.slug,
-            map.has(product.slug) ? {
-                product,
-                quantity: map.get(product.slug).quantity + quantity
-            } : { product, quantity } // default if not found
-        );
     }
 
-    for (const { product, quantity } of addCart) {
-        map.set(product.slug,
-            map.has(product.slug) ? {
-                product,
-                quantity: map.get(product.slug).quantity + quantity
-            } : { product, quantity } // default if not found
-        );
-    }
-
-    const newCart = Array.from(map.values());
-    console.log(newCart);
-    const updRes = await payload.update({
-        collection: 'cart',
-        id: userCart.id,
-        data: {
-            items: newCart
-        },
-        depth: 2
-    })
     return
 }
 
