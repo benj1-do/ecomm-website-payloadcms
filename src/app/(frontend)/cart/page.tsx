@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import createCart from './createCart'
 import { Cart } from '@/payload-types'
+import CartItem from './cartItem'
 
 export default async function CartPage() {
     const payload = await getPayload({ config })
@@ -23,12 +24,12 @@ export default async function CartPage() {
         } else {
             userCartObj = res.docs[0]
         }
-        const userCart = userCartObj.items ?? [];
+        userCart = userCartObj.items ?? [];
     }
 
     return (
 
-        <div className="flex w-full">
+        <div className="flex w-full !p-[10px]">
             {user &&
                 <div className="flex flex-col justify-center w-full">
                     <div>
@@ -37,29 +38,10 @@ export default async function CartPage() {
                     <div>
                         Id: {user.id}
                     </div>
-                    <div>
+                    <div className="!py-[10px]">
                         <h3>Cart</h3>
                     </div>
-                    <div className="gap-5 flex flex-col">
-                        {userCart && userCart.map(item => (
-                            <div key={item.id}>
-                                <div>
-                                    Name: {item.product.name}
-                                </div>
-                                <div>
-                                    Quantity: {item.quantity}
-                                </div>
-                                <div>
-                                    Total Price: ${item.product.price * item.quantity}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div>
-                        <h2>Total:
-                            ${userCart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)}
-                        </h2>
-                    </div>
+                    <CartItem UserCart={userCart} />
                 </div>
             }
             {!user &&
